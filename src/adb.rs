@@ -79,9 +79,10 @@ pub fn execute_adb_reserved_word(word: &str, search_duration: u64) {
 
     if let Some(selected_device) = select_device(&devices) {
         let mut command = Command::new("adb");
-        command.arg(selected_device.service_name.clone());
+        command.arg(word);
+        command.arg(selected_device.ip_port.clone());
 
-        if selected_device.service_name == "pair" {
+        if word == "pair" {
             print!("Enter pairing code: ");
             io::stdout().flush().unwrap();
             let mut pair_code = String::new();
@@ -89,7 +90,7 @@ pub fn execute_adb_reserved_word(word: &str, search_duration: u64) {
             command.arg(pair_code.trim());
         }
 
-        let output = command.output().expect(&format!("Failed to execute adb {} command", selected_device.service_name));
+        let output = command.output().expect(&format!("Failed to execute adb {} command", selected_device.ip_port));
         println!("======= execute =======");
         println!("{}", String::from_utf8_lossy(&output.stdout));
         eprintln!("error: {}", String::from_utf8_lossy(&output.stderr));
