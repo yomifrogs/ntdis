@@ -14,7 +14,7 @@ cargo build --release
 直接/local/binに配置する場合は以下のコマンドを実行してください。
 
 ```bash
-curl -L https://github.com/yomifrogs/ntdis/releases/download/v0.1.0/ntdis -o /usr/local/bin/ntdis && chmod +x /usr/local/bin/ntdis
+curl -L https://github.com/yomifrogs/ntdis/releases/download/v${latest_release_version}/ntdis -o /usr/local/bin/ntdis && chmod +x /usr/local/bin/ntdis
 ```
 
 ## 使い方
@@ -34,16 +34,34 @@ curl -L https://github.com/yomifrogs/ntdis/releases/download/v0.1.0/ntdis -o /us
 
 - `ntdis adb <args>`: ADBコマンドを実行します。`args`はADBに渡す引数です。
 
-## 例
+## Example
+
+### scan
 
 - ローカルネットワーク上のすべてのmDNSサービスをスキャンする:
+
   ```bash
-  ntdis scan -v -d 5
+  ntdis scan
   ```
 
-- 特定のデバイスタイプをスキャンして接続する:
+### adb
+
+- adbでペアリングする
+
   ```bash
-  ntdis adb connect -s 10
+  ntdis adb pair
+  ```
+
+- adbで接続する
+
+  ```bash
+  ntdis adb connect
+  ```
+
+- adbコマンドを実行する
+
+  ```bash
+  ntdis adb shell
   ```
 
 ## ライセンス
