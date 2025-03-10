@@ -11,7 +11,13 @@
 cargo build --release
 ```
 
-直接/local/binに配置する場合は以下のコマンドを実行してください。
+リポジトリをクローンする場合、もっとも簡単なインストール方法はCargoでインストールを実行することです
+
+```bash
+sh scripts/install.sh
+```
+
+リポジトリをクローンせず、直接/local/binに配置する場合は以下のコマンドを実行してください。
 
 ```bash
 curl -L https://github.com/yomifrogs/ntdis/releases/download/v${latest_release_version}/ntdis -o /usr/local/bin/ntdis && chmod +x /usr/local/bin/ntdis
