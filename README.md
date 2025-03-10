@@ -47,12 +47,15 @@ curl -L https://github.com/yomifrogs/ntdis/releases/download/v${latest_release_v
 ### adb
 
 - adbでペアリングする
+  - Android端末上で「ペア設定コードによるデバイスのペア設定」を選択し、ダイアログが開いた状態で下記を実行する
+  - 検出されたデバイスを選択し、端末に表示されているペアコードを入力すれば、ペア設定ができる
 
   ```bash
   ntdis adb pair
   ```
 
 - adbで接続する
+  - あらかじめペア設定を行っておくことが必要である
 
   ```bash
   ntdis adb connect
