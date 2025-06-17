@@ -39,10 +39,18 @@ fn browse_services(service_type: &str, search_duration: u64) -> Vec<DeviceInfo> 
     devices
 }
 
-fn select_device(devices: &[DeviceInfo]) -> Option<&DeviceInfo> {
+fn select_device(devices: &[DeviceInfo], auto_select: bool) -> Option<&DeviceInfo> {
     if devices.is_empty() {
         println!("No devices found.");
         return None;
+    }
+
+    // デバイスが1件のみの場合は、auto_selectフラグに応じて自動選択
+    if devices.len() == 1 && auto_select {
+        let device = &devices[0];
+        println!("Found 1 device, automatically selected: {} ({}) - Service: {}", 
+                 device.ip_port, device.hostname, device.service_name);
+        return Some(device);
     }
 
     println!("Found devices:");
@@ -64,7 +72,7 @@ fn select_device(devices: &[DeviceInfo]) -> Option<&DeviceInfo> {
     None
 }
 
-pub fn execute_adb_reserved_word(word: &str, search_duration: u64) {
+pub fn execute_adb_reserved_word(word: &str, search_duration: u64, auto_select: bool) {
     let service_type = match word {
         "connect" => "_adb-tls-connect._tcp.local.",
         "pair" => "_adb-tls-pairing._tcp.local.",
@@ -77,7 +85,7 @@ pub fn execute_adb_reserved_word(word: &str, search_duration: u64) {
     println!("Searching for {} services...", service_type);
     let devices = browse_services(service_type, search_duration);
 
-    if let Some(selected_device) = select_device(&devices) {
+    if let Some(selected_device) = select_device(&devices, auto_select) {
         let mut command = Command::new("adb");
         command.arg(word);
         command.arg(selected_device.ip_port.clone());

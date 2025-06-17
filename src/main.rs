@@ -54,6 +54,12 @@ async fn main() {
                                 .default_value("3")
                                 .help("Sets the scan duration for service discovery in seconds"),
                         )
+                        .arg(
+                            Arg::new("auto")
+                                .long("auto")
+                                .action(clap::ArgAction::SetTrue)
+                                .help("Automatically select device if only one is found"),
+                        )
                 )
                 .subcommand(
                     ClapCommand::new("pair")
@@ -65,6 +71,12 @@ async fn main() {
                                 .value_parser(clap::value_parser!(u64))
                                 .default_value("3")
                                 .help("Sets the scan duration for service discovery in seconds"),
+                        )
+                        .arg(
+                            Arg::new("auto")
+                                .long("auto")
+                                .action(clap::ArgAction::SetTrue)
+                                .help("Automatically select device if only one is found"),
                         )
                 )
                 .arg(
@@ -90,11 +102,13 @@ async fn main() {
             match sub_m.subcommand() {
                 Some(("connect", sub_m)) => {
                     let scan_duration = *sub_m.get_one::<u64>("scan_duration").expect("Scan duration must be a number");
-                    execute_adb_reserved_word("connect", scan_duration);
+                    let auto_select = sub_m.get_flag("auto");
+                    execute_adb_reserved_word("connect", scan_duration, auto_select);
                 }
                 Some(("pair", sub_m)) => {
                     let scan_duration = *sub_m.get_one::<u64>("scan_duration").expect("Scan duration must be a number");
-                    execute_adb_reserved_word("pair", scan_duration);
+                    let auto_select = sub_m.get_flag("auto");
+                    execute_adb_reserved_word("pair", scan_duration, auto_select);
                 }
                 _ => {
                     if let Some(args) = sub_m.get_many::<String>("args") {
