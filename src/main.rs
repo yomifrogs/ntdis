@@ -82,6 +82,7 @@ async fn main() {
                 .arg(
                     Arg::new("args")
                         .num_args(1..)
+                        .trailing_var_arg(true)
                         .help("Arguments to pass to adb"),
                 ),
         )
@@ -103,12 +104,12 @@ async fn main() {
                 Some(("connect", sub_m)) => {
                     let scan_duration = *sub_m.get_one::<u64>("scan_duration").expect("Scan duration must be a number");
                     let auto_select = sub_m.get_flag("auto");
-                    execute_adb_reserved_word("connect", scan_duration, auto_select);
+                    execute_adb_reserved_word("connect", scan_duration, auto_select, vec![]);
                 }
                 Some(("pair", sub_m)) => {
                     let scan_duration = *sub_m.get_one::<u64>("scan_duration").expect("Scan duration must be a number");
                     let auto_select = sub_m.get_flag("auto");
-                    execute_adb_reserved_word("pair", scan_duration, auto_select);
+                    execute_adb_reserved_word("pair", scan_duration, auto_select, vec![]);
                 }
                 _ => {
                     if let Some(args) = sub_m.get_many::<String>("args") {

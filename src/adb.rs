@@ -72,12 +72,12 @@ fn select_device(devices: &[DeviceInfo], auto_select: bool) -> Option<&DeviceInf
     None
 }
 
-pub fn execute_adb_reserved_word(word: &str, search_duration: u64, auto_select: bool) {
+pub fn execute_adb_reserved_word(word: &str, search_duration: u64, auto_select: bool, additional_args: Vec<&str>) {
     let service_type = match word {
         "connect" => "_adb-tls-connect._tcp.local.",
         "pair" => "_adb-tls-pairing._tcp.local.",
         _ => {
-            execute_adb_command(vec![]);
+            execute_adb_command(additional_args);
             return;
         }
     };
@@ -102,6 +102,11 @@ pub fn execute_adb_reserved_word(word: &str, search_duration: u64, auto_select: 
         println!("======= execute =======");
         println!("{}", String::from_utf8_lossy(&output.stdout));
         eprintln!("error: {}", String::from_utf8_lossy(&output.stderr));
+
+        // 追加のコマンドがある場合は実行
+        if !additional_args.is_empty() {
+            execute_adb_command_with_device(selected_device.ip_port.clone(), additional_args);
+        }
     }
 }
 
@@ -139,16 +144,20 @@ pub fn execute_adb_command(args: Vec<&str>) {
             let selected_device = lines[selection].split_whitespace().next().unwrap();
             println!("Selected device: {}", selected_device);
 
-            let mut command = Command::new("adb");
-            command.arg("-s").arg(selected_device);
-            command.args(&args);
-
-            let mut child = command.spawn().expect("Failed to execute adb command");
-            child.wait().expect("Failed to wait on child process");
+            execute_adb_command_with_device(selected_device.to_string(), args);
         } else {
             println!("Invalid selection.");
         }
     } else {
         println!("Invalid input.");
     }
+}
+
+pub fn execute_adb_command_with_device(device: String, args: Vec<&str>) {
+    let mut command = Command::new("adb");
+    command.arg("-s").arg(device);
+    command.args(&args);
+
+    let mut child = command.spawn().expect("Failed to execute adb command");
+    child.wait().expect("Failed to wait on child process");
 }
