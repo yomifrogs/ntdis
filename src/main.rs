@@ -10,7 +10,7 @@ use adb::execute_adb_command;
 #[tokio::main]
 async fn main() {
     let matches = ClapCommand::new("ntdis")
-        .version("1.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .author("yomifrogs")
         .about("Discovers mDNS services on the local network")
         .subcommand_required(true)
