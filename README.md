@@ -27,18 +27,99 @@ curl -L https://github.com/yomifrogs/ntdis/releases/download/v${latest_release_v
 
 ### 基本コマンド
 
-- `ntdis scan`: ローカルネットワーク上のmDNSサービスをスキャンします。
-  - `-v`, `--verbose`: 詳細な出力を有効にします。
-  - `-d`, `--duration <秒>`: サービス発見のスキャン時間を設定します（デフォルトは3秒）。
-  - `-t`, `--service_type <タイプ>`: 発見するサービスのタイプを指定します。
+```bash
+ntdis --help
+```
 
-- `ntdis adb connect`: デバイスに接続します。
-  - `-s`, `--scan_duration <秒>`: サービス発見のスキャン時間を設定します（デフォルトは3秒）。
+```text
+ローカルネットワーク上のmDNSサービスを発見します
 
-- `ntdis adb pair`: デバイスとペアリングします。
-  - `-s`, `--scan_duration <秒>`: サービス発見のスキャン時間を設定します（デフォルトは3秒）。
+使用法: ntdis <COMMAND>
 
-- `ntdis adb <args>`: ADBコマンドを実行します。`args`はADBに渡す引数です。
+コマンド:
+  scan  mDNSサービス発見のスキャンを実行します
+  adb   adbコマンドを実行します
+  help  このメッセージまたは指定されたサブコマンドのヘルプを表示します
+
+オプション:
+  -h, --help     ヘルプを表示します
+  -V, --version  バージョンを表示します
+```
+
+### scanコマンド
+
+```bash
+ntdis scan --help
+```
+
+```text
+mDNSサービス発見のスキャンを実行します
+
+使用法: ntdis scan [OPTIONS]
+
+オプション:
+  -v, --verbose                      詳細な出力を有効にします
+  -d, --duration <duration>          サービス発見のスキャン時間を秒単位で設定します [デフォルト: 3]
+  -t, --service_type <service_type>  発見するサービスタイプを指定します
+  -h, --help                         ヘルプを表示します
+```
+
+### adbコマンド
+
+```bash
+ntdis adb --help
+```
+
+```text
+adbコマンドを実行します
+
+使用法: ntdis adb [args]... [COMMAND]
+
+コマンド:
+  connect  デバイスに接続します
+  pair     デバイスとペアリングします
+  help     このメッセージまたは指定されたサブコマンドのヘルプを表示します
+
+引数:
+  [args]...  adbに渡す引数
+
+オプション:
+  -h, --help  ヘルプを表示します
+```
+
+#### adb connect
+
+```bash
+ntdis adb connect --help
+```
+
+```text
+デバイスに接続します
+
+使用法: ntdis adb connect [OPTIONS]
+
+オプション:
+  -s, --scan_duration <scan_duration>  サービス発見のスキャン時間を秒単位で設定します [デフォルト: 3]
+      --auto                           デバイスが1台のみ見つかった場合、自動的に選択します
+  -h, --help                           ヘルプを表示します
+```
+
+#### adb pair
+
+```bash
+ntdis adb pair --help
+```
+
+```text
+デバイスとペアリングします
+
+使用法: ntdis adb pair [OPTIONS]
+
+オプション:
+  -s, --scan_duration <scan_duration>  サービス発見のスキャン時間を秒単位で設定します [デフォルト: 3]
+      --auto                           デバイスが1台のみ見つかった場合、自動的に選択します
+  -h, --help                           ヘルプを表示します
+```
 
 ## Example
 
@@ -60,11 +141,25 @@ curl -L https://github.com/yomifrogs/ntdis/releases/download/v${latest_release_v
   ntdis adb pair
   ```
 
+- adbでペアリングする（自動選択）
+  - デバイスが1台のみ検出された場合、自動的に選択される
+
+  ```bash
+  ntdis adb pair --auto
+  ```
+
 - adbで接続する
   - あらかじめペア設定を行っておくことが必要である
 
   ```bash
   ntdis adb connect
+  ```
+
+- adbで接続する（自動選択）
+  - デバイスが1台のみ検出された場合、自動的に選択される
+
+  ```bash
+  ntdis adb connect --auto
   ```
 
 - adbコマンドを実行する
