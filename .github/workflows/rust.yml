@@ -40,29 +40,44 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 全履歴を取得してタグ比較を可能にする
 
     - name: Download release artifact
       uses: actions/download-artifact@v4
       with:
         name: ntdis
 
+    - name: Generate release notes
+      run: |
+        # 現在のタグを取得
+        CURRENT_TAG=${GITHUB_REF#refs/tags/}
+        
+        # 前回のタグを取得
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 $CURRENT_TAG^ 2>/dev/null || echo "")
+        
+        echo "## Changes in $CURRENT_TAG" > release_notes.md
+        echo "" >> release_notes.md
+        
+        if [ -z "$PREVIOUS_TAG" ]; then
+          echo "### 初回リリース" >> release_notes.md
+          echo "- 初回リリースです" >> release_notes.md
+        else
+          echo "### Changes from $PREVIOUS_TAG to $CURRENT_TAG" >> release_notes.md
+          echo "" >> release_notes.md
+          
+          # コミットメッセージを取得してリリースノートに追加
+          git log --pretty=format:"- %s" $PREVIOUS_TAG..$CURRENT_TAG >> release_notes.md
+        fi
+
     - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        body_path: release_notes.md
+        files: ntdis
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ntdis
-        asset_name: ntdis
-        asset_content_type: application/octet-stream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
